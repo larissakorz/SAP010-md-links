@@ -1,22 +1,27 @@
 const fs = require('fs');
 const path = require('path');
 
-function mdlinks(directory) {
-  if(path.extname(directory) === '.md') {
-    fs.readFile(directory, 'utf8', function(err, data) {
-      if(data) {
-        const regex = /\[([^[\]]*?)\]\((https?:\/\/[^\s?#.].[^\s]*)\)/gm;
-        const links = data.match(regex);
-        console.log(directory, links);
-      }else {
-        return err
-      }
-    });
-  }
-}
+function mdlinks(file) {
+  return new Promise((resolve, reject) => {
+    if(path.extname(file) === '.md') {
+      fs.readFile(file, 'utf8', function(err, data) {
+        if(data) {
+          const regex = /\[([^[\]]*?)\]\((https?:\/\/[^\s?#.].[^\s]*)\)/gm;
+          const links = [];
+          let match;
+          while ((match = regex.exec(data)) !== null) {
+            const text = match[1];
+            const href = match[2];
+            links.push({ text, href, file });
+          }
 
-const directory = './caminho/do/diretorio';
-mdlinks(directory);
+          console.log(links);
+          resolve(links);
+        }
+      });
+    }
+  }
+)}
 
 module.exports = mdlinks;
 
