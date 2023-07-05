@@ -1,33 +1,22 @@
-// LER ARQUIVO
-const fs = require('fs')
+const fs = require('fs');
+const path = require('path');
 
-fs.readFile('./README.md', 'utf8' , (err, data) => {
-  if (err) {
-    console.error(err)
-    return
+function mdlinks(directory) {
+  if(path.extname(directory) === '.md') {
+    fs.readFile(directory, 'utf8', function(err, data) {
+      if(data) {
+        const regex = /\[([^[\]]*?)\]\((https?:\/\/[^\s?#.].[^\s]*)\)/gm;
+        const links = data.match(regex);
+        console.log(directory, links);
+      }else {
+        return err
+      }
+    });
   }
-  // console.log(data)
-  const regex = /\[([^[\]]*?)\]\((https?:\/\/[^\s?#.].[^\s]*)\)/gm
-  const links = data.match(regex);
-  console.log(links);
-})
+}
 
+const directory = './caminho/do/diretorio';
+mdlinks(directory);
 
-// // EXTENSAO DE UM ARQUIVO
-// const path = require('path');
+module.exports = mdlinks;
 
-// const caminhoArquivo = './src/exemplo.txt';
-// const extensao = path.extname(caminhoArquivo);
-// console.log(extensao);
-
-// // Obter o conteúdo de um diretório
-// fs.readdir('./src/', (err, files) => {
-//   if (err) {
-//     console.error(err);
-//     return;
-//   }
-//   console.log(files);
-// });
-
-// // Definir rotas
-// require('path').dirname('./src/exemplo.txt')
