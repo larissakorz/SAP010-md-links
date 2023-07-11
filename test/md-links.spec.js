@@ -1,39 +1,28 @@
-const mdlinks = require('../index');
+const getLinks = require('../index');
+const fetch = require('cross-fetch');
+
+jest.mock('cross-fetch', () => jest.fn());
 
 describe('mdlinks', () => {
-  it('Deve extrair corretamente os links', () => {
-    const caminho = 'test/teste.md';
-    const resultadoEsperado = [
-      {
-        href: 'https://pt.wikipedia.org/wiki/Markdown',
-        text: 'Markdown',
-        file: caminho,
-      },
-      {
-        href: 'https://www.linkedin.com/',
-        text: 'Linkedin',
-        file: caminho,
-      },
-      {
-        href: 'https://www.youtube.com/',
-        text: 'Youtube',
-        file: caminho,
-      },
-    ];
+  let mockFetch;
 
-    return mdlinks(caminho).then((links) => {
-      expect(links).toEqual(resultadoEsperado);
-    });
+  beforeEach(() => {
+    mockFetch = jest.fn();
+    fetch.mockImplementation(mockFetch)
   });
-});
 
-describe('mdlinks', () => {
-  it('Deve buscar o arquivo .md', () => {
-    const caminho = 'test/teste.md';
-    return mdlinks(caminho).then((links) => {
-        links.forEach((link) => {
-          expect(link.file).toBe(caminho);
-        });
-      })
+  it('Deve extrair corretamente os links', () => {
+    const caminho = 'teste.md';
+
+    mockFetch.mockResolvedValueOnce({
+      status: 200,
+      ok: true
+    });
+
+    return getLinks(caminho).then((result) => {
+      expect(result[0]).toEqual(
+        { text: 'Markdown', href: 'https://pt.wikipedia.org/wiki/Markdown', file: 'teste.md' }
+      );
+    });
   });
 });
