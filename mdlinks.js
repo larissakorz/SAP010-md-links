@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const mdlinks = require('./index');
+const { mdlinks, getStats } = require('./index');
 
 const caminhoArquivo = process.argv[2];
 const options = {
@@ -10,10 +10,9 @@ const options = {
 mdlinks(caminhoArquivo, options)
   .then((links) => {
     if (options.validate && options.stats) {
-      const stats = statsLinks(links);
-      console.log(`TOTAL: ${stats.total} `);
-      console.log(`UNIQUE: ${stats.unique}`);
-      console.log(`BROKEN: ${stats.broken}`);
+      console.log(`TOTAL: ${links.stats.total} `);
+      console.log(`UNIQUE: ${links.stats.unique}`);
+      console.log(`BROKEN: ${links.stats.broken}`);
       console.log('============================');
     } else if (options.stats) {
         console.log(`TOTAL: ${links.stats.total}`);

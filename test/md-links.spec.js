@@ -57,7 +57,7 @@ describe('getStats', () => {
       { href: 'https://www.exemplo2.com', ok: 'success' },
       { href: 'https://www.exemplo3.com', ok: 'fail' },
       { href: 'https://www.exemplo4.com', ok: 'success' },
-      { href: 'https://www.exemplo5.com', ok: 'fail' },
+      { href: 'https://www.exemplo4.com', ok: 'fail' },
     ];
 
     const result = getStats(links);
