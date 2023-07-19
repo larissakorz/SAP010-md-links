@@ -36,4 +36,3 @@ mdlinks(caminhoArquivo, options)
     .catch((error) => {
       console.error(error);
   });
-

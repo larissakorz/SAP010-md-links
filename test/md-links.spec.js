@@ -53,11 +53,11 @@ describe('validateFetch', () => {
 describe('getStats', () => {
   it('deve retornar as estatísticas corretas para uma lista de links', () => {
     const links = [
-      { href: 'https://www.example.com/page1', ok: 'success' },
-      { href: 'https://www.example.com/page2', ok: 'success' },
-      { href: 'https://www.example.com/page3', ok: 'fail' },
-      { href: 'https://www.example.com/page1', ok: 'success' },
-      { href: 'https://www.example.com/page4', ok: 'fail' },
+      { href: 'https://www.exemplo1.com', ok: 'success' },
+      { href: 'https://www.exemplo2.com', ok: 'success' },
+      { href: 'https://www.exemplo3.com', ok: 'fail' },
+      { href: 'https://www.exemplo4.com', ok: 'success' },
+      { href: 'https://www.exemplo5.com', ok: 'fail' },
     ];
 
     const result = getStats(links);
@@ -67,6 +67,3 @@ describe('getStats', () => {
     expect(result.broken).toBe(2);
   });
 })
-
-
-
