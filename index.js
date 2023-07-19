@@ -1,5 +1,6 @@
 const fs = require('fs');
 const fetch = require('cross-fetch');
+const path = require('path');
 
 function getLinks(data, file){
   const regex = /\[([^[\]]*?)\]\((https?:\/\/[^\s?#.].[^\s]*)\)/gm;
@@ -12,34 +13,79 @@ function getLinks(data, file){
   return result;
 }
 
-function mdlinks(file, options = { validate: false, stats: false }) {
+function directory(file) {
   return new Promise((resolve, reject) => {
-    fs.promises.readFile(file, 'utf-8')
-      .then((result) => {
-        const links = getLinks(result, file);
-        if (options.validate) {
-          const requests = links.map((link) => validateLink(link));
-          Promise.all(requests)
-            .then((validatedLinks) => {
-              if (options.stats) {
-                const stats = getStats(validatedLinks);
-                resolve({ links: validatedLinks, stats });
-              } else {
-                resolve(validatedLinks);
-              }
+    fs.promises.stat(file)
+      .then((stats) => resolve(stats.isDirectory()))
+      .catch(() => resolve(false));
+  });
+}
+
+function mdlinks(file, options) {
+  return new Promise((resolve, reject) => {
+    directory(file)
+      .then((isDir) => {
+        if (isDir) {
+          fs.promises.readdir(file)
+            .then((files) => {
+              const filePromises = files.map((filename) => {
+                const filePath = path.join(file, filename);
+                return mdlinks(filePath, options);
+              });
+              Promise.all(filePromises)
+                .then((fileResults) => {
+                  const allLinks = fileResults.reduce((acc, links) => acc.concat(links), []);
+                  if (options.stats) {
+                    const stats = getStats(allLinks);
+                    resolve({ links: allLinks, stats });
+                  } else {
+                    resolve(allLinks);
+                  }
+                })
+                .catch((error) => {
+                  reject(error);
+                });
             })
             .catch((error) => {
               reject(error);
             });
         } else {
-          if (options.stats) {
-            const stats = getStats(links);
-            resolve({ links, stats });
+          const pathExist = path.extname(file).toLowerCase();
+          if (pathExist === '.md') {
+            fs.promises.readFile(file, 'utf-8')
+              .then((result) => {
+                const links = getLinks(result, file);
+                if (options.validate) {
+                  const requests = links.map((link) => validateLink(link));
+                  Promise.all(requests)
+                    .then((validatedLinks) => {
+                      if (options.stats) {
+                        const stats = getStats(validatedLinks);
+                        resolve({ links: validatedLinks, stats });
+                      } else {
+                        resolve(validatedLinks);
+                      }
+                    })
+                } else {
+                  if (options.stats) {
+                    const stats = getStats(links);
+                    resolve({ links, stats });
+                  } else {
+                    resolve(links);
+                  }
+                }
+              })
+              .catch((error) => {
+                console.log('Este caminho não existe');
+              });
           } else {
-            resolve(links);
+            console.log('Este arquivo não é um arquivo .md');
           }
         }
       })
+      .catch((error) => {
+        reject(error);
+      });
   });
 }
 
@@ -71,5 +117,8 @@ function getStats(links) {
   };
 }
 
-module.exports = mdlinks;
-
+module.exports = {
+  mdlinks,
+  validateLink,
+  getStats
+}

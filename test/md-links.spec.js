@@ -1,28 +1,72 @@
-const getLinks = require('../index');
+const { mdlinks, getStats, validateLink } = require('../index')
 const fetch = require('cross-fetch');
 
 jest.mock('cross-fetch', () => jest.fn());
 
-describe('mdlinks', () => {
+describe('mdLinks', () => {
+  test('devera devolver uma promisse', () => {
+    const resultado = mdlinks('README.md')
+    expect(resultado instanceof Promise).toBe(true)
+  });
+
+  test('devera devolver o caso de erro', () => {
+    const path = './arquivos/teste.md';
+    const options = {};
+
+    return mdlinks(path, options)
+      .then(() => {
+        throw new Error('Esperava-se um erro, mas não houve.');
+      })
+      .catch((error) => {
+        expect(error).toBeInstanceOf(Error);
+      });
+  });
+});
+
+describe('validateFetch', () => {
   let mockFetch;
 
   beforeEach(() => {
     mockFetch = jest.fn();
-    fetch.mockImplementation(mockFetch)
+    fetch.mockImplementation(mockFetch);
   });
 
-  it('Deve extrair corretamente os links', () => {
-    const caminho = 'teste.md';
 
-    mockFetch.mockResolvedValueOnce({
-      status: 200,
-      ok: true
-    });
+  describe('validateFetch', () => {
+    it('Deve validar corretamente os links md', () => {
+      const links = { text: 'Markdown', href: 'http://example.com', file: 'README.md' };
 
-    return getLinks(caminho).then((result) => {
-      expect(result[0]).toEqual(
-        { text: 'Markdown', href: 'https://pt.wikipedia.org/wiki/Markdown', file: 'teste.md' }
-      );
+      mockFetch.mockResolvedValueOnce({
+        status: 200,
+        ok: true,
+      });
+
+      return validateLink(links).then((result) => {
+        expect(result).toEqual(
+          { text: 'Markdown', href: 'http://example.com', file: 'README.md', status: 200, ok: 'OK' },
+        );
+      });
     });
   });
-});
+})
+
+describe('getStats', () => {
+  it('deve retornar as estatísticas corretas para uma lista de links', () => {
+    const links = [
+      { href: 'https://www.example.com/page1', ok: 'success' },
+      { href: 'https://www.example.com/page2', ok: 'success' },
+      { href: 'https://www.example.com/page3', ok: 'fail' },
+      { href: 'https://www.example.com/page1', ok: 'success' },
+      { href: 'https://www.example.com/page4', ok: 'fail' },
+    ];
+
+    const result = getStats(links);
+
+    expect(result.total).toBe(5);
+    expect(result.unique).toBe(4);
+    expect(result.broken).toBe(2);
+  });
+})
+
+
+

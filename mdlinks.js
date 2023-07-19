@@ -10,9 +10,10 @@ const options = {
 mdlinks(caminhoArquivo, options)
   .then((links) => {
     if (options.validate && options.stats) {
-      console.log(`TOTAL: ${links.stats.total} `);
-      console.log(`UNIQUE: ${links.stats.unique}`);
-      console.log(`BROKEN: ${links.stats.broken}`);
+      const stats = statsLinks(links);
+      console.log(`TOTAL: ${stats.total} `);
+      console.log(`UNIQUE: ${stats.unique}`);
+      console.log(`BROKEN: ${stats.broken}`);
       console.log('============================');
     } else if (options.stats) {
         console.log(`TOTAL: ${links.stats.total}`);
