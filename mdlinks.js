@@ -8,29 +8,31 @@ const options = {
 };
 
 mdlinks(caminhoArquivo, options)
-  .then(({ links, stats }) => {
+  .then((links) => {
     if (options.validate && options.stats) {
-      console.log(`TOTAL: ${stats.total}`);
+      const stats = statsLinks(links);
+      console.log(`TOTAL: ${stats.total} `);
       console.log(`UNIQUE: ${stats.unique}`);
       console.log(`BROKEN: ${stats.broken}`);
+      console.log('============================');
     } else if (options.stats) {
-      console.log(`Total: ${stats.total}`);
-      console.log(`Unique: ${stats.unique}`);
+        console.log(`TOTAL: ${links.stats.total}`);
+        console.log(`UNIQUE: ${links.stats.unique}`);
+        console.log('============================');
     } else if (options.validate) {
-      links.forEach((link) => {
-        console.log(`${link.file} ${link.href} ${link.text} ${link.ok} ${link.status}`);
-        console.log('=======================');
-      });
+        links.forEach((link) => {
+          console.log(`${link.file} ${link.href} ${link.text} ${link.ok} ${link.status}`);
+          console.log('=======================');
+        })
     } else {
-      links.forEach((link) => {
-        console.log(`TEXTO: ${link.text}`);
-        console.log(`HREF: ${link.href}`);
-        console.log(`FILE: ${link.file}`);
-        console.log('=======================');
-      });
-    }
-  })
-  .catch((error) => {
-    console.error(error);
+        links.forEach((link) => {
+          console.log(`TEXTO: ${link.text}`);
+          console.log(`HREF: ${link.href}`);
+          console.log(`FILE: ${link.file}`);
+          console.log('============================');
+        })
+      }
+    })
+    .catch((error) => {
+      console.error(error);
   });
-

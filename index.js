@@ -8,78 +8,79 @@ function getLinks(data, file){
   const result = capturarRegex.map((match) => ({
     text: match[1],
     href: match[2],
-    file: path.basename(file)
+    file: file
   }));
   return result;
 }
 
-function mdlinks(file, options) {
+function directory(file) {
   return new Promise((resolve, reject) => {
-    const currentDirectory = process.cwd();
-    recursive(currentDirectory, file)
-      .then((filePath) => {
-        if (!filePath) {
-          console.log(`O arquivo ${file} não é um arquivo md.`);
-          resolve([]);
-        } else {
-          fileMarkdown(filePath, options)
-            .then(resolve)
-            .catch(reject);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        reject(error);
-      });
+    fs.promises.stat(file)
+      .then((stats) => resolve(stats.isDirectory()))
+      .catch(() => resolve(false));
   });
 }
 
-function recursive(directory, fileName, options) {
-  return fs.promises.readdir(directory)
-    .then((files) => {
-      const filePromises = files.map((file) => {
-        const filePath = path.join(directory, file);
-        return fs.promises.stat(filePath)
-          .then((stats) => {
-            if (stats.isFile() && file === fileName && path.extname(file) === '.md') {
-              return filePath;
-            } else if (stats.isDirectory()) {
-              return recursive(filePath, fileName, options);
-            } else {
-              return null;
-            }
-          });
-      });
-      return Promise.all(filePromises);
-    })
-    .then((results) => {
-      const foundFile = results.find((filePath) => filePath !== null);
-      return foundFile || null;
-    })
-    .catch((error) => {
-      throw error;
-    });
-}
-
-function fileMarkdown(filePath, options) {
+function mdlinks(file, options) {
   return new Promise((resolve, reject) => {
-    fs.promises.readFile(filePath, 'utf8')
-      .then((data) => {
-        const links = getLinks(data, filePath);
-
-        if (options && options.validate) {
-          const linkPromises = links.map(validateLink);
-          Promise.all(linkPromises)
-            .then((validatedLinks) => {
-              const stats = getStats(validatedLinks);
-              resolve({ file: filePath, links: validatedLinks, stats });
+    directory(file)
+      .then((isDir) => {
+        if (isDir) {
+          fs.promises.readdir(file)
+            .then((files) => {
+              const filePromises = files.map((filename) => {
+                const filePath = path.join(file, filename);
+                return mdlinks(filePath, options);
+              });
+              Promise.all(filePromises)
+                .then((fileResults) => {
+                  const allLinks = fileResults.reduce((acc, links) => acc.concat(links), []);
+                  if (options.stats) {
+                    const stats = getStats(allLinks);
+                    resolve({ links: allLinks, stats });
+                  } else {
+                    resolve(allLinks);
+                  }
+                })
+                .catch((error) => {
+                  reject(error);
+                });
             })
             .catch((error) => {
               reject(error);
             });
         } else {
-          const stats = getStats(links);
-          resolve({ file: filePath, links, stats });
+          const pathExist = path.extname(file).toLowerCase();
+          if (pathExist === '.md') {
+            fs.promises.readFile(file, 'utf-8')
+              .then((result) => {
+                const links = getLinks(result, file);
+                if (options.validate) {
+                  const requests = links.map((link) => validateLink(link));
+                  Promise.all(requests)
+                    .then((validatedLinks) => {
+                      if (options.stats) {
+                        const stats = getStats(validatedLinks);
+                        resolve({ links: validatedLinks, stats });
+                      } else {
+                        resolve(validatedLinks);
+                      }
+                    })
+                } else {
+                  if (options.stats) {
+                    const stats = getStats(links);
+                    resolve({ links, stats });
+                  } else {
+                    resolve(links);
+                  }
+                }
+              })
+              .catch((error) => {
+                console.log('Este caminho não existe');
+              });
+          } else {
+            console.log('Este arquivo não é um arquivo .md');
+          }
         }
       })
       .catch((error) => {
@@ -116,4 +117,8 @@ function getStats(links) {
   };
 }
 
-module.exports = mdlinks;
+module.exports = {
+  mdlinks,
+  validateLink,
+  getStats
+}
