@@ -1,6 +1,7 @@
 const fs = require('fs');
 const fetch = require('cross-fetch');
 const path = require('path');
+const chalk = require('chalk')
 
 function getLinks(data, file){
   const regex = /\[([^[\]]*?)\]\((https?:\/\/[^\s?#.].[^\s]*)\)/gm;
@@ -75,7 +76,7 @@ function mdlinks(file, options) {
                   }
                 }
               })
-              .catch((error) => {
+              .catch(() => {
                 console.log('Este caminho não existe');
               });
           } else {
@@ -93,15 +94,15 @@ function validateLink(link) {
   return fetch(link.href)
   .then((response) => {
     link.status = response.status;
-    link.ok = 'OK';
+    link.ok = chalk.green('OK');
     if(link.status >= 400){
-      link.ok = 'FAIL';
+      link.ok = chalk.red('fail');
     }
     return link;
   })
   .catch((erro) => {
-    link.status = erro;
-    link.ok = 'fail';
+    link.status = chalk.red('erro');
+    link.ok = chalk.red('fail');
     return link;
   })
 }
@@ -117,4 +118,9 @@ function getStats(links) {
   };
 }
 
-module.exports = { mdlinks, validateLink, getStats, getLinks }
+module.exports = {
+  mdlinks,
+  validateLink,
+  getStats,
+  getLinks
+}

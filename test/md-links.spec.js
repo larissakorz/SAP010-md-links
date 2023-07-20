@@ -24,7 +24,7 @@ describe('getLinks', () => {
 });
 
 describe('mdLinks', () => {
-  it('should return properties of a valid diretory', () => {
+  it('deve retornar propriedades de um diretório válido', () => {
     const path = 'arquivos/teste/'
     const options = {};
     const result = mdlinks(path, options);
@@ -44,7 +44,7 @@ describe('mdLinks', () => {
     expect(mdlinks(filePath, options)).rejects.toThrow('Opções inválidas');
   });
 
-  it('should return an array of links with stats when the "stats" option is provided', () => {
+  it('deve retornar uma matriz de links com estatísticas quando a opção "stats" for fornecida', () => {
     const file = './arquivos/teste.md';
     const options = { stats: true };
     return mdlinks(file, options)
@@ -53,7 +53,7 @@ describe('mdLinks', () => {
       });
   });
 
-  it('should return an empty array when given an empty file path', () => {
+  it('deve retornar um array vazio quando for um caminho de arquivo vazio', () => {
     const file = './arquivos/semLink.md';
     const options = {};
     return mdlinks(file, options)
