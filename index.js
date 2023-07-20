@@ -117,4 +117,4 @@ function getStats(links) {
   };
 }
 
-module.exports = { mdlinks, validateLink, getStats }
+module.exports = { mdlinks, validateLink, getStats, getLinks }

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { mdlinks, getStats } = require('./index');
+const mdlinks = require('./index');
 
 const caminhoArquivo = process.argv[2];
 const options = {

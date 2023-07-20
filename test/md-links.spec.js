@@ -1,24 +1,64 @@
-const { mdlinks, getStats, validateLink } = require('../index')
+const { mdlinks, getStats, getLinks, validateLink } = require('../index')
 const fetch = require('cross-fetch');
 
 jest.mock('cross-fetch', () => jest.fn());
 
+describe('getLinks', () => {
+  it('deve retornar um array de objetos contendo os links', () => {
+    const data = `
+      [Google](https://www.google.com).
+    `;
+
+    const file = 'example.md';
+    const expectedLinks = [
+      {
+        text: 'Google',
+        href: 'https://www.google.com',
+        file: 'example.md',
+      },
+    ];
+
+    const links = getLinks(data, file);
+    expect(links).toEqual(expectedLinks);
+  });
+});
+
 describe('mdLinks', () => {
-  test('devera devolver uma promisse', () => {
-    const resultado = mdlinks('README.md')
-    expect(resultado instanceof Promise).toBe(true)
+  it('should return properties of a valid diretory', () => {
+    const path = 'arquivos/teste/'
+    const options = {};
+    const result = mdlinks(path, options);
+    return result.then((links) => {
+     links.forEach((link) => {
+       expect(link).toHaveProperty('href');
+       expect(link).toHaveProperty('text');
+       expect(link).toHaveProperty('file');
+     });
+    });
+   });
+
+   it('Deve rejeitar a promise para opções inválidas', () => {
+    const filePath = '/arquivos/arquivo.md';
+    const options = { invalidOption: true };
+
+    expect(mdlinks(filePath, options)).rejects.toThrow('Opções inválidas');
   });
 
-  test('devera devolver o caso de erro', () => {
-    const path = './arquivos/teste.md';
-    const options = {};
+  it('should return an array of links with stats when the "stats" option is provided', () => {
+    const file = './arquivos/teste.md';
+    const options = { stats: true };
+    return mdlinks(file, options)
+      .then((result) => {
+        expect(Array.isArray(result.links)).toBe(true);
+      });
+  });
 
-    return mdlinks(path, options)
-      .then(() => {
-        throw new Error('Esperava-se um erro, mas não houve.');
-      })
-      .catch((error) => {
-        expect(error).toBeInstanceOf(Error);
+  it('should return an empty array when given an empty file path', () => {
+    const file = './arquivos/semLink.md';
+    const options = {};
+    return mdlinks(file, options)
+      .then((result) => {
+        expect(result.length).toBe(0);
       });
   });
 });
@@ -30,7 +70,6 @@ describe('validateFetch', () => {
     mockFetch = jest.fn();
     fetch.mockImplementation(mockFetch);
   });
-
 
   describe('validateFetch', () => {
     it('Deve validar corretamente os links md', () => {
@@ -45,6 +84,22 @@ describe('validateFetch', () => {
         expect(result).toEqual(
           { text: 'Markdown', href: 'http://example.com', file: 'README.md', status: 200, ok: 'OK' },
         );
+      });
+    });
+  });
+
+  it('Deve retornar o status "fail" quando a requisição falhar', () => {
+    const url = {
+      href: 'http://example.co',
+    };
+
+    mockFetch.mockRejectedValueOnce(('Request failed'));
+
+    return validateLink(url).then((result) => {
+      expect(result).toEqual({
+        ...url,
+        status: 'Request failed',
+        ok: 'fail',
       });
     });
   });
