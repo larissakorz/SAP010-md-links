@@ -1,5 +1,4 @@
-* [Objetos em JavaScript](https://curriculum.laborator)
-</p></details>
+ * [Arranjos](https://curriculum.laboratoria.la/pt/topics/javascript/04-arrays)
 
 Uma comunidade open source nos propôs criar uma ferramenta, usando
 [Node.js](https://nodejs.org/), que leia e analise arquivos no formato

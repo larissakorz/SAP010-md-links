@@ -28,9 +28,9 @@ mdlinks(caminhoArquivo, options)
         })
     } else {
         links.forEach((link) => {
-          console.log(`TEXTO: ${link.text}`);
-          console.log(`HREF: ${link.href}`);
-          console.log(`FILE: ${link.file}`);
+          console.log(chalk.yellow(`TEXTO: ${link.text}`));
+          console.log(chalk.yellow(`HREF: ${link.href}`));
+          console.log(chalk.yellow(`FILE: ${link.file}`));
           console.log('============================');
         })
       }
