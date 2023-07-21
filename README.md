@@ -5,8 +5,7 @@
 * [1. Prefácio](#1-prefácio)
 * [2. Resumo do projeto](#2-resumo-do-projeto)
 * [3. Instruções Instalação e uso](#3-instruções-instalação-e-uso)
-* [4. Fluxograma](#4-fluxograma)
-* [5. Tecnologias utilizadas](#5-tecnologias-utilizadas)
+* [4. Tecnologias utilizadas](#5-tecnologias-utilizadas)
 
 ***
 
