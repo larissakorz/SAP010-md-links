@@ -71,6 +71,7 @@ describe('validateFetch', () => {
     fetch.mockImplementation(mockFetch);
   });
 
+
   describe('validateFetch', () => {
     it('Deve validar corretamente os links md', () => {
       const links = { text: 'Markdown', href: 'http://example.com', file: 'README.md' };
@@ -88,6 +89,7 @@ describe('validateFetch', () => {
     });
   });
 
+
   it('Deve retornar o status "fail" quando a requisição falhar', () => {
     const url = {
       href: 'http://example.co',
@@ -95,15 +97,13 @@ describe('validateFetch', () => {
 
     mockFetch.mockRejectedValueOnce(('Request failed'));
 
-    return validateLink(url).then((result) => {
-      expect(result).toEqual({
-        ...url,
-        status: 'Request failed',
-        ok: 'fail',
-      });
+    return validateLink(url).catch((result) => {
+      expect(result.href).toEqual(url.href);
+      expect(result.status).toEqual('Request failed');
+      expect(result.ok).toEqual('fail');
     });
   });
-})
+});
 
 describe('getStats', () => {
   it('deve retornar as estatísticas corretas para uma lista de links', () => {

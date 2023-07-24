@@ -92,19 +92,20 @@ function mdlinks(file, options) {
 
 function validateLink(link) {
   return fetch(link.href)
-  .then((response) => {
-    link.status = response.status;
-    link.ok = chalk.green('OK');
-    if(link.status >= 400){
-      link.ok = chalk.red('fail');
-    }
-    return link;
-  })
-  .catch((erro) => {
-    link.status = chalk.red('erro');
-    link.ok = chalk.red('fail');
-    return link;
-  })
+    .then((response) => {
+      link.status = response.status;
+      link.ok = 'OK';
+      if (link.status >= 400) {
+        link.ok = 'fail';
+        link.status = 'Request failed';
+      }
+      return link;
+    })
+    .catch((error) => {
+      link.status = 'erro';
+      link.ok = 'fail';
+      return link;
+    });
 }
 
 function getStats(links) {

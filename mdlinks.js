@@ -22,7 +22,7 @@ mdlinks(caminhoArquivo, options)
           console.log(chalk.magenta(`${link.file}`));
           console.log(`${link.href}`);
           console.log(chalk.yellow(`${link.text}`));
-          console.log(`${link.ok}`);
+          console.log(chalk.green(`${link.ok}`));
           console.log(chalk.blue(`${link.status}`));
           console.log('=======================');
         })

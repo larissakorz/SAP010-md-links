@@ -34,7 +34,7 @@ Essa ferramenta analisa um arquivo markdown e retorna no terminal a lista de lin
 
 ## 3. Instruções Instalação e uso
 
-Para instalar a biblioteca, execute o seguinte comando no seu terminal:
+Para instalar a biblioteca, execute o seguinte comando no seu terminal: `npm i md-links-larissa-korz`
 
 Após a instalação é possível executar o seguinte comando:
 
@@ -59,7 +59,7 @@ Caso a opção adicionada for --stats, irá mostrar o total de links e links ún
 ## 4. Tecnologias utilizadas
 
 <div>
-  <img alt="Jest" height="30" width="40" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jest/jest-plain.svg" /> 
+  <img alt="Jest" height="30" width="40" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jest/jest-plain.svg" />
   <img alt="git" height="30" width="40" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" />
   <img alt="Rafa-Js" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-plain.svg">
   <img alt="vscode" height="30" width="40" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" />
